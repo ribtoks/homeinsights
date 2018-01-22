@@ -4,8 +4,8 @@ CXXFLAGS=-DRPI
 
 all: tempserver
 
-tempserver: RCSwitch.o tempserver.o
+tempserver: ../../vendors/rc-switch/RCSwitch.o tempserver.o
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) $+ -o $@ -lwiringPi
 
 clean:
-	$(RM) *.o tempserver
+	$(RM) ../../vendors/rc-switch/*.o *.o tempserver
