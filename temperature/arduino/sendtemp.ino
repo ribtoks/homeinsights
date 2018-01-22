@@ -1,4 +1,5 @@
 #include <RCSwitch.h>
+#include <DHT.h>
 
 RCSwitch tempSwitch = RCSwitch();
 
@@ -8,6 +9,13 @@ RCSwitch tempSwitch = RCSwitch();
 #define TEMP_MAX 50.f
 
 #define SENSOR_ID 2
+#define DHTPIN 2  
+#define DHTTYPE DHT22 
+
+DHT dht(DHTPIN, DHTTYPE);
+int chk;
+float hum;  
+float temp;
 
 unsigned int getTemperatureCode(float temperature) {
   float x = (temperature - TEMP_MIN)/TEMP_STEP;
@@ -41,15 +49,20 @@ unsigned long createTemperatureMessage(byte id, float temperature) {
 
   return result;
 }
-  
+
 void setup() {
   tempSwitch.enableTransmit(8);
+  Serial.begin(9600);
+  dht.begin();
 
   pinMode(13, OUTPUT);
 }
 
-void loop() {
-  unsigned long message = createTemperatureMessage(SENSOR_ID, 22.5f);
+void loop() {  
+  hum = dht.readHumidity();
+  temp= dht.readTemperature();
+  
+  unsigned long message = createTemperatureMessage(SENSOR_ID, temp);
   tempSwitch.send(message, 32);
 
   digitalWrite(13, HIGH);
