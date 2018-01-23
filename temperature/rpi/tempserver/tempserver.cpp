@@ -5,8 +5,10 @@
 #include "tempreading.h"
 
 #define HEADER 0x2D
-#define TEMP_MIN -30.0
-#define TEMP_STEP 0.0049438476
+#define TEMP_MIN -40.0
+// #define TEMP_MAX 80
+// (TEMP_MAX - TEMP_MIN + 1)/(2^14)
+#define TEMP_STEP 0.0073852539
 
 #define DB_ERROR 3
 
