@@ -7,7 +7,7 @@
 int log(const char *fmt, ...) {
     FILE *logFile = nullptr;
 
-    logFile = fopen("logs.txt", "a+");
+    logFile = fopen("tempserver.log", "a+");
     
     va_list args;
     va_start(args, fmt);
