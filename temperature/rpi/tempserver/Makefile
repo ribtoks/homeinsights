@@ -4,7 +4,7 @@ CXXFLAGS=-DRPI
 
 all: tempserver
 
-tempserver: ../../../vendors/rc-switch/RCSwitch.o tempserver.o
+tempserver: ../../../vendors/rc-switch/RCSwitch.o tempserver.o common.o readingsDB.o
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) $+ -o $@ -lwiringPi -lsqlite3
 
 clean:

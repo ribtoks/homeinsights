@@ -1,138 +1,123 @@
 #include "../../../vendors/rc-switch/RCSwitch.h"
-#include <stdlib.h>
 #include <stdio.h>
-#include <stdargs.h>
-#include <sqlite3.h>
+#include "common.h"
+#include "readingsDB.h"
+#include "tempreading.h"
 
 #define HEADER 0x2D
-#define TEMP_MIN -30.0f
-#define TEMP_STEP 0.0049438476f
+#define TEMP_MIN -30.0
+#define TEMP_STEP 0.0049438476
+
+#define DB_ERROR 3
 
 typedef unsigned int uint;
 
 RCSwitch tempSwitch;
 
-int log(const char *fmt, ...) {
-    va_list args;
-    va_start(args, fmt);
-    return printf(fmt, args);
-}
-
-void handleReading(unsigned int value) {
-  bool success = false;
-  float temperature = 0.0f;
-  const uint originalValue = value;
-
-  do {
-    uint receivedChecksum = value & 0x3F;
-    value >>= 6;
-  
-    uint tempCode = value & 0x3FFF;
-    value >>= 14;
-
-    uint id = value & 0x3F;
-    value >>= 6;
-
-    uint header = value & 0x3F;
-  
-    if (header != HEADER) {
-      log("Protocol violation: header mismatch. Received: %u\n", header);
-      break;
-    }
-
-    uint checksum = tempCode;
-    checksum ^= id;
-    checksum ^= header;
-    checksum ^= (tempCode >> 8);
-    checksum = checksum & 0x3F;
-
-    if (checksum != receivedChecksum) {
-      log("Protocol violation: checksum mismatch");
-      break;
-    } else {
-      log("Temp code: %u\n", tempCode);
-    }
-
-    temperature = TEMP_MIN + TEMP_STEP * (float)tempCode;
-
-    success = true;
-  } while (false);
-
-  if (success) {
-    log("Received temperature: %.6f\n", temperature);
-  } else {
-    log("Failed to process something: %u\n", originalValue);
-  }
-}
-
-void openDatabase(sqlite3 **db, const char *fullDbPath) {
-    int flags = 0;
-    flags |= SQLITE_OPEN_READWRITE;
-    flags |= SQLITE_OPEN_CREATE;
-    flags |= SQLITE_OPEN_FULLMUTEX;
-    
-    const int result = sqlite3_open_v2(fullDbPath, db, flags, nullptr);
-    if (result != SQLITE_OK) {
-        log("Opening %s failed! Error: %s", fullDbPath, sqlite3_errstr(result));
-        anyError = true;
-        
-        closeDatabase(*db);
-    }
-}
-
-bool executeStatement(sqlite *db, const char *stmt) {
+bool tryReadMessage(unsigned int value, TempReading &reading) {
     bool success = false;
-    int rc = sqlite3_exec(db, stmt, nullptr, nullptr, nullptr);
-    if (rc != SQLITE_OK) {
-        log("Failed to execute (%s). Error: %s", stmt, sqlite3_errstr(rc));
+    const uint originalValue = value;
+
+    do {
+        uint receivedChecksum = value & 0x3F;
+        value >>= 6;
+  
+        uint tempCode = value & 0x3FFF;
+        value >>= 14;
+
+        uint id = value & 0x3F;
+        value >>= 6;
+
+        uint header = value & 0x3F;
+  
+        if (header != HEADER) {
+            log("Protocol violation: header mismatch. Received: %u", header);
+            break;
+        }
+
+        uint checksum = tempCode;
+        checksum ^= id;
+        checksum ^= header;
+        checksum ^= (tempCode >> 8);
+        checksum = checksum & 0x3F;
+
+        if (checksum != receivedChecksum) {
+            log("Protocol violation: checksum mismatch");
+            break;
+        } else {
+            log("Temp code: %u", tempCode);
+        }
+
+        temperature = TEMP_MIN + TEMP_STEP * (double)tempCode;
+
+        reading.m_SensorID = id;
+        reading.m_Temperature = temperature;
+
+        success = true;
+    } while (false);
+
+    if (!success) {
+        log("Failed to process something: %u", originalValue);
     }
-    
-    bool success = rc == SQLITE_OK;
+
     return success;
 }
 
-void initializeDatabase(sqlite3 *db) {
-    executeStatement("PRAGMA auto_vacuum = 0;");
-    executeStatement("PRAGMA cache_size = -20000;");
-    executeStatement("PRAGMA case_sensitive_like = true;");
-    executeStatement("PRAGMA encoding = \"UTF-8\";");
-    executeStatement("PRAGMA journal_mode = WAL;");
-    executeStatement("PRAGMA locking_mode = NORMAL;");
-    executeStatement("PRAGMA synchronous = NORMAL;");
-}
+void handleReading(sqlite3 *db, sqlite3_stmt *insertStatement, unsigned int value) {
+    TempReading reading;
 
-void closeDatabase(sqlite3 *db) {
-    const int closeResult = sqlite3_close(m_Database);
-    if (closeResult != SQLITE_OK) {
-        log("Closing database failed! Error: %s", sqlite3_errstr(result));
+    if (tryReadMessage(value, reading)) {
+        insertTemperature(db, insertStatement, reading);
     }
 }
 
 int main(int argc, char *argv[]) {
-  if (wiringPiSetup() < 0) {
-    log("Failed to initialize wiringPi\n");
-    return 1;
-  } else {
-    log("WiringPi is initialized\n");
-  }
-
-  const int PIN = 2;
-  tempSwitch = RCSwitch();
-  tempSwitch.enableReceive(PIN);
-  log("Listening on pin %d...\n", PIN);
-
-  sqlite3 *db;
+    if (argc < 2) {
+        log("Path to DB is missing");
+        return 1;
+    }
     
-  while (1) {
-    if (tempSwitch.available()) {
-      int value = tempSwitch.getReceivedValue();
-      tempSwitch.resetAvailable();
-
-      handleReading((unsigned int)value);
+    if (wiringPiSetup() < 0) {
+        log("Failed to initialize wiringPi");
+        return 2;
+    } else {
+        log("WiringPi is initialized");
     }
 
-    fflush(stdout);
-  }
+    const int PIN = 2;
+    tempSwitch = RCSwitch();
+    tempSwitch.enableReceive(PIN);
+    log("Listening on pin %d...", PIN);
 
-  return 0;
+    sqlite3 *db;
+    if (!openDatabase(&db, argv[1])) {
+        log("Failed to open database %s", argv[1]);
+        return DB_ERROR;
+    }
+
+    initializeDatabase(db);
+    if (!createTemperatureTable(db)) {
+        log("Failed to create table in DB");
+        return DB_ERROR;
+    }
+
+    sqlite3_stmt *insertStatement = 0;
+    insertStatement = prepareInsertTempStmt(db);
+    if (insertStatement == 0) {
+        log("Failed to create INSERT statement");
+        return DB_ERROR;
+    }
+    
+    while (1) {
+        if (tempSwitch.available()) {
+            int value = tempSwitch.getReceivedValue();
+            tempSwitch.resetAvailable();
+
+            handleReading(db, insertStatement, (unsigned int)value);
+        }
+
+        fflush(stdout);
+    }
+
+    return 0;
 }
