@@ -86,15 +86,17 @@ int main(int argc, char *argv[]) {
         log("WiringPi is initialized");
     }
 
-    const int PIN = 2;
+    const int IO_PIN = 2;
     tempSwitch = RCSwitch();
-    tempSwitch.enableReceive(PIN);
-    log("Listening on pin %d...", PIN);
+    tempSwitch.enableReceive(IO_PIN);
+    log("Listening on pin %d...", IO_PIN);
 
     sqlite3 *db;
     if (!openDatabase(&db, argv[1])) {
         log("Failed to open database %s", argv[1]);
         return DB_ERROR;
+    } else {
+        log("Successfully opened database %s", argv[1]);
     }
 
     initializeDatabase(db);
