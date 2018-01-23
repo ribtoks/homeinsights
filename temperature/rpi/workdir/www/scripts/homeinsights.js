@@ -1,6 +1,6 @@
 window.onload = function () {
     var url = document.URL + 'temps/';
-    var list = $('#list')
+    var list = $('#insights')
     
     $.getJSON(url, function(data) {
         console.log('API response received');
