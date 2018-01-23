@@ -8,6 +8,9 @@ import (
   "bytes"
   "time"
   "flag"
+  "log"
+  "os"
+  "fmt"
 )
 
 var (
@@ -37,11 +40,16 @@ func (th *TempHandler) initDatabase() error {
     return err
   }
 
+  log.Println("Database initialized")
+  
   return nil
 }
 
 func (th *TempHandler) finalizeDatabase() error {
   th.db.Close()
+  
+  log.Println("Database closed")
+  
   return nil
 }
 
@@ -49,7 +57,9 @@ func (th *TempHandler) ServeHTTP(rw http.ResponseWriter, request *http.Request) 
   var timestamp int64
   var sensorID int
   var temperature float32
-
+  
+  log.Println("Recieved request")
+  
   rows, err := th.selectStmt.Query()
   if err != nil { return }
 
@@ -79,6 +89,11 @@ func main() {
   if err != nil {
     return
   }
+  
+  logfile, err := setupLogging()
+  if err != nil {
+    defer logfile.Close()
+  }
 
   http.Handle("/", http.FileServer(http.Dir("./www")))
   http.Handle("/temps", handler)
@@ -86,4 +101,19 @@ func main() {
   err = http.ListenAndServe(":8080", nil)
 
   handler.finalizeDatabase();
+}
+
+func setupLogging() (f *os.File, err error) {
+  f, err = os.OpenFile("./logfile.log", os.O_RDWR | os.O_CREATE | os.O_APPEND, 0666)
+  if err != nil {
+    fmt.Println("error opening file: %v", "./logfile.log")
+    return nil, err
+  }
+
+  log.SetOutput(f)  
+
+  log.Println("------------------------------")
+  log.Println("log started")
+
+  return f, err
 }
