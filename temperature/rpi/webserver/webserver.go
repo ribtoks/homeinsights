@@ -8,7 +8,6 @@ import (
   "bytes"
   "time"
   "flag"
-  "fmt"
 )
 
 var (
