@@ -18,7 +18,7 @@ bool openDatabase(sqlite3 **db, const char *fullDbPath) {
         closeDatabase(*db);
     }
 
-    return anyError;
+    return !anyError;
 }
 
 bool executeStatement(sqlite3 *db, const char *stmt) {
