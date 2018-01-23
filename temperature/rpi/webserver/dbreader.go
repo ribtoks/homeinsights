@@ -7,6 +7,12 @@ import (
   "net/http"
   "bytes"
   "time"
+  "flag"
+  "fmt"
+)
+
+var (
+  dbPathFlag = flag.String("db-path", "./temp.db", "Path to the database with temperature notes")
 )
 
 type TempData struct {
@@ -15,38 +21,46 @@ type TempData struct {
   Temperature float32 `json:"temperature"`
 }
 
-func main() {
-
-  http.HandleFunc("/temps", handler)
-
-  err := http.ListenAndServe(":6688", nil)
-  checkErr(err)  
-  
+type TempHandler struct {
+  db *sql.DB
+  selectStmt *sql.Stmt
 }
 
-func handler(rw http.ResponseWriter, request *http.Request) {
-
-  db, err := sql.Open("sqlite3", "./temp.db")
-  checkErr(err)
-
-  statement, err := db.Prepare("SELECT * FROM Temps")
-  checkErr(err)
+func (th *TempHandler) initDatabase() error {
+  var err error
+  th.db, err = sql.Open("sqlite3", *dbPathFlag)
+  if err != nil {
+    return err
+  }
   
+  th.selectStmt, err = th.db.Prepare("SELECT * FROM Temps")
+  if err != nil {
+    return err
+  }
+
+  return nil
+}
+
+func (th *TempHandler) finalizeDatabase() error {
+  th.db.Close()
+  return nil
+}
+
+func (th *TempHandler) ServeHTTP(rw http.ResponseWriter, request *http.Request) {
   var timestamp int64
   var sensorID int
   var temperature float32
 
-  rows, err := statement.Query()
-  checkErr(err)
+  rows, err := th.selectStmt.Query()
+  if err != nil { return }
 
   var tempsArr []TempData
   
   for rows.Next() {
     err = rows.Scan(&timestamp, &sensorID, &temperature)
-    checkErr(err)
+    if err != nil { continue }
 
-    t := time.Unix(timestamp, 0)
-        
+    t := time.Unix(timestamp, 0)        
     tempsArr = append(tempsArr, TempData{t.String(), sensorID, temperature})
   }
 
@@ -56,12 +70,22 @@ func handler(rw http.ResponseWriter, request *http.Request) {
   rw.Write(byteArray)
   
   rows.Close()
-
-  db.Close()
 }
 
-func checkErr(err error) {
+func main() {
+  flag.Parse()
+
+  fmt.Println(*dbPathFlag)
+  
+  handler := &TempHandler{}
+  err := handler.initDatabase()
   if err != nil {
-    panic(err)
+    return
   }
+  
+  http.Handle("/temps", handler)
+
+  err = http.ListenAndServe(":8080", nil)
+
+  handler.finalizeDatabase();
 }
