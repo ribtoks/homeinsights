@@ -6,7 +6,7 @@
 int log(const char *fmt, ...) {
     va_list args;
     va_start(args, fmt);
-    int result = printf(fmt, args);
+    int result = vprintf(fmt, args);
     printf("\n");
     return result;
 }
