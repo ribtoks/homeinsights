@@ -48,7 +48,7 @@ bool tryReadMessage(unsigned int value, TempReading &reading) {
             log("Temp code: %u", tempCode);
         }
 
-        temperature = TEMP_MIN + TEMP_STEP * (double)tempCode;
+        double temperature = TEMP_MIN + TEMP_STEP * (double)tempCode;
 
         reading.m_SensorID = id;
         reading.m_Temperature = temperature;
