@@ -46,11 +46,10 @@ bool tryReadMessage(unsigned int value, TempReading &reading) {
         if (checksum != receivedChecksum) {
             log("Protocol violation: checksum mismatch");
             break;
-        } else {
-            log("Temp code: %u", tempCode);
         }
 
         double temperature = TEMP_MIN + TEMP_STEP * (double)tempCode;
+        log("Received temperature %.6f", temperature);
 
         reading.m_SensorID = id;
         reading.m_Temperature = temperature;
