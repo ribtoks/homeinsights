@@ -1,5 +1,5 @@
 window.onload = function () {
-    var url = document.URL + 'temps/';
+    var url = document.URL + 'temps';
     var list = $('#insights');
     
     $.getJSON(url, function(data) {
