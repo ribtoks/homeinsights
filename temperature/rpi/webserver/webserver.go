@@ -80,7 +80,8 @@ func main() {
   if err != nil {
     return
   }
-  
+
+  http.Handle("/", http.FileServer(http.Dir("./www")))
   http.Handle("/temps", handler)
 
   err = http.ListenAndServe(":8080", nil)
