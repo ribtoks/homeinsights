@@ -25,7 +25,7 @@ Manual currently for Arduino Uno + Raspberry Pi
 
 ## Programming
 
-* disto Raspbian with `gcc`, `git`
+* disto Raspbian with `gcc`, `git`, `libsqlite3-dev`, `sqlite3`
 * install `gpio` library
 * install `wiringPi` library
 * install `433Utils` library (you will need `rc-switch` from that repo)
