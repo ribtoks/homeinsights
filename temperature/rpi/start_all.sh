@@ -3,7 +3,7 @@ pushd workdir
 
 ../tempserver/tempserver temps.db &
 
-../webserver/webserver temps.db &
+../webserver/webserver -db-path temps.db &
 
 popd
 

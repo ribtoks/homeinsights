@@ -75,8 +75,6 @@ func (th *TempHandler) ServeHTTP(rw http.ResponseWriter, request *http.Request) 
 func main() {
   flag.Parse()
 
-  fmt.Println(*dbPathFlag)
-  
   handler := &TempHandler{}
   err := handler.initDatabase()
   if err != nil {
