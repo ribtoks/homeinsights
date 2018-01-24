@@ -84,15 +84,15 @@ func (th *TempHandler) ServeHTTP(rw http.ResponseWriter, request *http.Request) 
 func main() {
   flag.Parse()
 
-  handler := &TempHandler{}
-  err := handler.initDatabase()
-  if err != nil {
-    return
-  }
-  
   logfile, err := setupLogging()
   if err != nil {
     defer logfile.Close()
+  }
+  
+  handler := &TempHandler{}
+  err = handler.initDatabase()
+  if err != nil {
+    return
   }
 
   http.Handle("/", http.FileServer(http.Dir("./www")))
