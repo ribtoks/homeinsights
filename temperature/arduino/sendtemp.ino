@@ -1,21 +1,18 @@
 #include <RCSwitch.h>
+#define DHTTYPE DHT22 
 #include <DHT.h>
 
 RCSwitch tempSwitch = RCSwitch();
 
 #define HEADER 0x2D
-#define TEMP_STEP 0.0049438476f
-#define TEMP_MIN -30.f
-#define TEMP_MAX 50.f
+#define TEMP_STEP 0.0073852539f
+#define TEMP_MIN -40.f
+#define TEMP_MAX 80.f
 
 #define SENSOR_ID 2
 #define DHTPIN 2  
-#define DHTTYPE DHT22 
 
 DHT dht(DHTPIN, DHTTYPE);
-int chk;
-float hum;  
-float temp;
 
 unsigned int getTemperatureCode(float temperature) {
   float x = (temperature - TEMP_MIN)/TEMP_STEP;
@@ -59,8 +56,8 @@ void setup() {
 }
 
 void loop() {  
-  hum = dht.readHumidity();
-  temp= dht.readTemperature();
+  float hum = dht.readHumidity();
+  float temp = dht.readTemperature();
   
   unsigned long message = createTemperatureMessage(SENSOR_ID, temp);
   tempSwitch.send(message, 32);
