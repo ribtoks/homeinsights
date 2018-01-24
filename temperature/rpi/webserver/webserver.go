@@ -6,7 +6,7 @@ import (
   "encoding/json"
   "net/http"
   "bytes"
-  "time"
+//  "time"
   "flag"
   "log"
   "os"
@@ -18,7 +18,7 @@ var (
 )
 
 type TempData struct {
-  Time string `json:"time"`
+  Time int64 `json:"time"`
   SensorID int `json:"sensorID"`
   Temperature float32 `json:"temperature"`
 }
@@ -69,8 +69,8 @@ func (th *TempHandler) ServeHTTP(rw http.ResponseWriter, request *http.Request) 
     err = rows.Scan(&timestamp, &sensorID, &temperature)
     if err != nil { continue }
 
-    t := time.Unix(timestamp, 0)        
-    tempsArr = append(tempsArr, TempData{t.String(), sensorID, temperature})
+    //t := time.Unix(timestamp, 0)        
+    tempsArr = append(tempsArr, TempData{timestamp, sensorID, temperature})
   }
 
   temps, _ := json.Marshal(tempsArr)
