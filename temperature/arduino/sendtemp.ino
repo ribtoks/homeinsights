@@ -10,7 +10,9 @@ RCSwitch tempSwitch = RCSwitch();
 #define TEMP_MAX 80.f
 
 #define SENSOR_ID 2
-#define DHTPIN 2  
+
+#define DHTPIN 9
+#define RADIO_PIN 2
 
 DHT dht(DHTPIN, DHTTYPE);
 
@@ -51,7 +53,7 @@ void setup() {
   tempSwitch.enableTransmit(8);
   dht.begin();
   // DEBUG mode only
-  pinMode(13, OUTPUT);
+  // pinMode(13, OUTPUT);
 }
 
 void loop() {  
