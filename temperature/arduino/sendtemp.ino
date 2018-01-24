@@ -49,9 +49,8 @@ unsigned long createTemperatureMessage(byte id, float temperature) {
 
 void setup() {
   tempSwitch.enableTransmit(8);
-  Serial.begin(9600);
   dht.begin();
-
+  // DEBUG mode only
   pinMode(13, OUTPUT);
 }
 
@@ -62,9 +61,10 @@ void loop() {
   unsigned long message = createTemperatureMessage(SENSOR_ID, temp);
   tempSwitch.send(message, 32);
 
-  digitalWrite(13, HIGH);
-  delay(500);
-  digitalWrite(13, LOW);
+  // debug mode only
+  // digitalWrite(13, HIGH);
+  // delay(500);
+  // digitalWrite(13, LOW);
   
-  delay(5000);
+  delay(60000);
 }
