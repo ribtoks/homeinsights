@@ -1,5 +1,4 @@
 #include <RCSwitch.h>
-#define DHTTYPE DHT22 
 #include <DHT.h>
 
 RCSwitch tempSwitch = RCSwitch();
@@ -11,10 +10,11 @@ RCSwitch tempSwitch = RCSwitch();
 
 #define SENSOR_ID 2
 
-#define DHTPIN 9
+#define DHTTYPE DHT22 
+#define DHT_PIN 9
 #define RADIO_PIN 2
 
-DHT dht(DHTPIN, DHTTYPE);
+DHT dht(DHT_PIN, DHTTYPE);
 
 unsigned int getTemperatureCode(float temperature) {
   float x = (temperature - TEMP_MIN)/TEMP_STEP;
@@ -50,7 +50,7 @@ unsigned long createTemperatureMessage(byte id, float temperature) {
 }
 
 void setup() {
-  tempSwitch.enableTransmit(8);
+  tempSwitch.enableTransmit(RADIO_PIN);
   dht.begin();
   // DEBUG mode only
   // pinMode(13, OUTPUT);
