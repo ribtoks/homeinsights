@@ -14,6 +14,7 @@ function setupCharts(data) {
     var margin = {top: 20, right: 20, bottom: 30, left: 50};
     var width = 960 - margin.left - margin.right;
     var height = 500 - margin.top - margin.bottom;
+
     // set the ranges
     var xScale = d3.scaleTime()
         .range([margin.left, width - margin.right])
@@ -29,14 +30,18 @@ function setupCharts(data) {
         .append('g').
         attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-/*    var xAxis = d3.axisBottom().scale(xScale);
- //   var yAxis = d3.axis.scale(yScale);
+    var xAxis = d3.axisBottom().scale(xScale).ticks(10).tickFormat(d3.timeFormat('%H:%M'));
+    var yAxis = d3.axisLeft().scale(yScale);
 
     chart.append('g')
 	.attr("class", "x axis")
 	.attr("transform", "translate(0," + height + ")")
 	.call(xAxis);
-  */  
+
+    chart.append('g')
+      .attr("class", "y axis")
+      .call(yAxis);
+    
     //original color threshold is 10! after 10 different sensorID change schemeCategory to 20
     var color = d3.scaleOrdinal(d3.schemeCategory10);
     
