@@ -4,18 +4,17 @@
 RCSwitch tempSwitch = RCSwitch();
 
 #define HEADER 0x2D
-#define TEMP_STEP 0.0049438476f
-#define TEMP_MIN -30.f
-#define TEMP_MAX 50.f
+#define TEMP_STEP 0.0073852539f
+#define TEMP_MIN -40.f
+#define TEMP_MAX 80.f
 
 #define SENSOR_ID 2
-#define DHTPIN 2  
-#define DHTTYPE DHT22 
 
-DHT dht(DHTPIN, DHTTYPE);
-int chk;
-float hum;  
-float temp;
+#define DHTTYPE DHT22 
+#define DHT_PIN 9
+#define RADIO_PIN 2
+
+DHT dht(DHT_PIN, DHTTYPE);
 
 unsigned int getTemperatureCode(float temperature) {
   float x = (temperature - TEMP_MIN)/TEMP_STEP;
@@ -51,23 +50,23 @@ unsigned long createTemperatureMessage(byte id, float temperature) {
 }
 
 void setup() {
-  tempSwitch.enableTransmit(8);
-  Serial.begin(9600);
+  tempSwitch.enableTransmit(RADIO_PIN);
   dht.begin();
-
-  pinMode(13, OUTPUT);
+  // DEBUG mode only
+  // pinMode(13, OUTPUT);
 }
 
 void loop() {  
-  hum = dht.readHumidity();
-  temp= dht.readTemperature();
+  float hum = dht.readHumidity();
+  float temp = dht.readTemperature();
   
   unsigned long message = createTemperatureMessage(SENSOR_ID, temp);
   tempSwitch.send(message, 32);
 
-  digitalWrite(13, HIGH);
-  delay(500);
-  digitalWrite(13, LOW);
+  // debug mode only
+  // digitalWrite(13, HIGH);
+  // delay(500);
+  // digitalWrite(13, LOW);
   
-  delay(5000);
+  delay(60000);
 }
