@@ -125,13 +125,14 @@ function setupCharts(data) {
 };
 
 window.onload = function () {
-    var url = document.URL + 'temps';
+    setTimeout(function(){
+        var url = document.URL + 'temps';
 
-    // use only for DEBUG 
-    $.getJSON(url, function(data) {
-        console.log('API response received');
-        setupCharts(data);
-    });
+        $.getJSON(url, function(data) {
+            console.log('API response received');
+            setupCharts(data);
+        });
+    }, 1000);    
 };
 
 
