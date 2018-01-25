@@ -35,21 +35,21 @@ func (th *TempHandler) initDatabase() error {
     return err
   }
   
-  th.selectStmt, err = th.db.Prepare("SELECT * FROM Temps ORDER BY Time DESC LIMIT 1000")
+  log.Printf("Database %v opened", *dbPathFlag)
+  
+  th.selectStmt, err = th.db.Prepare("SELECT * FROM Temps ORDER BY time DESC LIMIT 1000")
   if err != nil {
     return err
   }
 
-  log.Println("Database initialized")
+  log.Println("Statement prepared")
   
   return nil
 }
 
 func (th *TempHandler) finalizeDatabase() error {
-  th.db.Close()
-  
-  log.Println("Database closed")
-  
+  th.db.Close()  
+  log.Println("Database closed")  
   return nil
 }
 
@@ -58,7 +58,7 @@ func (th *TempHandler) ServeHTTP(rw http.ResponseWriter, request *http.Request) 
   var sensorID int
   var temperature float32
   
-  log.Println("Recieved request")
+  log.Println("Processing request from %v", request.RemoteAddr)
   
   rows, err := th.selectStmt.Query()
   if err != nil { return }
@@ -103,13 +103,13 @@ func main() {
 }
 
 func setupLogging() (f *os.File, err error) {
-  f, err = os.OpenFile("./logfile.log", os.O_RDWR | os.O_CREATE | os.O_APPEND, 0666)
+  f, err = os.OpenFile("webserver.log", os.O_RDWR | os.O_CREATE | os.O_APPEND, 0666)
   if err != nil {
-    fmt.Println("error opening file: %v", "./logfile.log")
+    fmt.Println("error opening logfile")
     return nil, err
   }
 
-  log.SetOutput(f)  
+  log.SetOutput(f)
 
   log.Println("------------------------------")
   log.Println("log started")
