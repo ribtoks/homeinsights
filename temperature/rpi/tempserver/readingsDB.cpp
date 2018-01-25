@@ -96,15 +96,3 @@ void closeDatabase(sqlite3 *db) {
         log("Closing database failed! Error: %s", sqlite3_errstr(closeResult));
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-

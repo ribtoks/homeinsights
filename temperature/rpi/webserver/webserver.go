@@ -58,7 +58,7 @@ func (th *TempHandler) ServeHTTP(rw http.ResponseWriter, request *http.Request) 
   var sensorID int
   var temperature float32
   
-  log.Println("Processing request from %v", request.RemoteAddr)
+  log.Printf("Processing request from %v", request.RemoteAddr)
   
   rows, err := th.selectStmt.Query()
   if err != nil { return }
@@ -72,8 +72,12 @@ func (th *TempHandler) ServeHTTP(rw http.ResponseWriter, request *http.Request) 
     tempsArr = append(tempsArr, TempData{timestamp, sensorID, temperature})
   }
 
+  log.Printf("%v objects to return", len(tempsArr))
+
   temps, _ := json.Marshal(tempsArr)
   byteArray := bytes.NewBuffer(temps).Bytes()
+
+  log.Printf("%v bytes to send", len(byteArray))
 
   rw.Write(byteArray)
   
