@@ -30,8 +30,14 @@ function setupCharts(data) {
         .append('g').
         attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+    var formatTime = d3.timeFormat('%m/%d %H:%M');
+    var div = d3.select('body').append('div')	
+        .attr("class", "tooltip")				
+        .style("opacity", 0);
+
+    
     var xAxis = d3.axisBottom().scale(xScale).ticks(10).tickFormat(d3.timeFormat('%H:%M'));
-    var yAxis = d3.axisLeft().scale(yScale);
+    var yAxis = d3.axisLeft().scale(yScale).ticks(10);
 
     chart.append('g')
 	.attr("class", "x axis")
@@ -66,7 +72,21 @@ function setupCharts(data) {
         .enter().append("circle")
         .attr("r", 3.5)
         .attr("cx", function(d) { return xScale(mapDate(d)); })
-        .attr("cy", function(d) { return yScale(mapTemp(d)); });
+        .attr("cy", function(d) { return yScale(mapTemp(d)); })
+        .on("mouseover", function(d) {		
+            div.transition()		
+                .duration(200)		
+                .style('opacity', .9);		
+            div	.html(formatTime(d.time) + '<br/>'  + d.temperature + ' °C')	
+                .style('left', (d3.event.pageX) + 'px')		
+                .style('top', (d3.event.pageY - 28) + 'px');	
+        })					
+        .on("mouseout", function(d) {		
+            div.transition()		
+                .duration(500)		
+                .style("opacity", 0);	
+        });
+
 }
 
 window.onload = function () {
