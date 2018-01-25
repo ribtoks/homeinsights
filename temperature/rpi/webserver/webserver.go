@@ -35,7 +35,7 @@ func (th *TempHandler) initDatabase() error {
     return err
   }
   
-  th.selectStmt, err = th.db.Prepare("SELECT * FROM Temps")
+  th.selectStmt, err = th.db.Prepare("SELECT * FROM Temps ORDER BY Time DESC LIMIT 1000")
   if err != nil {
     return err
   }
@@ -68,8 +68,7 @@ func (th *TempHandler) ServeHTTP(rw http.ResponseWriter, request *http.Request) 
   for rows.Next() {
     err = rows.Scan(&timestamp, &sensorID, &temperature)
     if err != nil { continue }
-
-    //t := time.Unix(timestamp, 0)        
+  
     tempsArr = append(tempsArr, TempData{timestamp, sensorID, temperature})
   }
 
