@@ -126,17 +126,10 @@ function setupCharts(data) {
 
 window.onload = function () {
     var url = document.URL + 'temps';
-    var list = $('#insights');
 
     // use only for DEBUG 
     $.getJSON(url, function(data) {
         console.log('API response received');
-        $.each(data, function(index, object) {
-            var item = $('<li/>');
-            item.append('sensor #' + object.sensorID + ': ' + object.temperature + 'C');
-            list.append(item);
-        });               
-        
         setupCharts(data);
     });
 };
