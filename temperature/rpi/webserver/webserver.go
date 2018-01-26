@@ -37,7 +37,7 @@ func (th *TempHandler) initDatabase() error {
   
   log.Printf("Database %v opened", *dbPathFlag)
   
-  th.selectStmt, err = th.db.Prepare("SELECT * FROM Temps ORDER BY time DESC LIMIT 1000")
+  th.selectStmt, err = th.db.Prepare("SELECT * FROM Temps ORDER BY time DESC LIMIT 150")
   if err != nil {
     return err
   }
