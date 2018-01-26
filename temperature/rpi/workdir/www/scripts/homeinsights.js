@@ -53,9 +53,7 @@ function setupCharts(data) {
     // ----------------------------------------
     
     var groupData = data.groupBy('sensorID');
-    var dataset = $.map(groupData, function(value, index) {
-        return [value];
-    });
+    var dataset = Object.keys(groupData).map(function (key) { return [groupData[key]]; });
     
     var line = d3.line()
         .x(function(d) { return xScale(mapDate(d)); })
