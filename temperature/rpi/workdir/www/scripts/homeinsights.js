@@ -77,7 +77,7 @@ function setupCharts(data) {
 	.attr("class", "legend")
 	.attr("height", 400)
 	.attr("width", 100)
-        .attr('transform', 'translate(-50,50)');
+        .attr('transform', 'translate(-70,50)');
 
     var legends = { paddingLeft: 25, itemHeight: 25, textPadding: 20 };
     
@@ -102,7 +102,7 @@ function setupCharts(data) {
     // ----------------------------------------
 
     var tooltipDiv = d3.select('body').append('div')	
-        .attr("class", "tooltip")				
+        .attr("class", 'tooltip')
         .style("opacity", 0);
 
         dataBindings.enter()
@@ -114,7 +114,7 @@ function setupCharts(data) {
 	.attr('cy', function (d) { return yScale(mapTemp(d)); })
 	.attr('r', 3)
         .on("mouseover", function(d) {
-            tooltipDiv.transition().duration(200).style('opacity', .9);		
+            tooltipDiv.transition().duration(200).style('opacity', 0.9);
             tooltipDiv.html(formatTime(d.time) + '<br/>'  + d.temperature + ' °C')	
                 .style('left', (d3.event.pageX) + 'px')		
                 .style('top', (d3.event.pageY - 28) + 'px');	
