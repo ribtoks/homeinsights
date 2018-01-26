@@ -28,8 +28,9 @@ Manual currently for Arduino Uno + Raspberry Pi
 * disto Raspbian with `gcc`, `git`, `libsqlite3-dev`, `sqlite3`
 * install `gpio` library
 * install `wiringPi` library
-* install `433Utils` library (you will need `rc-switch` from that repo)
-* copy and build `tempserver` in `rpi/` directory on RaspberryPi
+* [optional] install `433Utils` library
+* run `build_all.sh` in `rpi/` directory on RaspberryPi
+* run `crontab -e` to edit crontab entries and add `@reboot bash /full/path/to/start_all.sh` line
 
 ## Wiring
 
