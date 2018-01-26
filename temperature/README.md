@@ -30,7 +30,7 @@ Manual currently for Arduino Uno + Raspberry Pi
 * install `wiringPi` library
 * [optional] install `433Utils` library
 * run `build_all.sh` in `rpi/` directory on RaspberryPi
-* run `crontab -e` to edit crontab entries and add `@reboot bash /full/path/to/start_all.sh` line
+* run `crontab -e` to edit crontab entries and add `@reboot sleep 60 && /full/path/to/start_all.sh` line
 
 ## Wiring
 
