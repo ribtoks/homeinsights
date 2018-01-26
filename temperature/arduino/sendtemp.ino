@@ -1,6 +1,15 @@
 #include <RCSwitch.h>
 #include <DHT.h>
 
+// -----------------------------------------------------
+// -------- change this section before flushing --------
+// -----------------------------------------------------
+#define SENSOR_ID 1
+// #define MY_UNO
+#define MY_MINI
+// #define MY_DEBUG
+// -----------------------------------------------------
+
 RCSwitch tempSwitch = RCSwitch();
 
 #define HEADER 0x2D
@@ -8,11 +17,17 @@ RCSwitch tempSwitch = RCSwitch();
 #define TEMP_MIN -40.f
 #define TEMP_MAX 80.f
 
-#define SENSOR_ID 2
+#define DHTTYPE DHT22
 
-#define DHTTYPE DHT22 
-#define DHT_PIN 9
-#define RADIO_PIN 2
+#if defined(MY_UNO)
+    #define DHT_PIN 2
+    #define RADIO_PIN 8
+    #define LED_PIN 13
+#elif defined(MY_MINI)
+    #define DHT_PIN 9
+    #define RADIO_PIN 2
+    #define LED_PIN 13
+#endif
 
 DHT dht(DHT_PIN, DHTTYPE);
 
@@ -52,21 +67,27 @@ unsigned long createTemperatureMessage(byte id, float temperature) {
 void setup() {
   tempSwitch.enableTransmit(RADIO_PIN);
   dht.begin();
-  // DEBUG mode only
-  // pinMode(13, OUTPUT);
+
+#ifdef MY_DEBUG
+  pinMode(LED_PIN, OUTPUT);
+#endif
 }
 
-void loop() {  
-  float hum = dht.readHumidity();
+void loop() {
   float temp = dht.readTemperature();
   
   unsigned long message = createTemperatureMessage(SENSOR_ID, temp);
   tempSwitch.send(message, 32);
 
-  // debug mode only
-  // digitalWrite(13, HIGH);
-  // delay(500);
-  // digitalWrite(13, LOW);
-  
-  delay(60000);
+#ifdef MY_DEBUG
+  digitalWrite(LED_PIN, HIGH);
+  delay(500);
+  digitalWrite(LED_PIN, LOW);
+#endif
+
+#ifdef MY_DEBUG
+  delay(5000);
+#else
+  delay(10*60000);
+#endif
 }
