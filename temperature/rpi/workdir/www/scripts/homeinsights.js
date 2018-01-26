@@ -26,11 +26,18 @@ function setupCharts(data) {
         .range([height - margin.top, margin.bottom])
         .domain([d3.min(data, mapTemp), d3.max(data, mapTemp)]);
 
-    var chart = d3.select('#linechart').append('svg')
+    var zoom = d3.zoom()
+        .on("zoom", zoomed);
+
+    var svg = d3.select('#linechart')
+        .append('svg')
         .attr('width', width + margin.left + margin.right)
-        .attr('height', height + margin.top + margin.bottom)
-        .append('g').
-        attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+        .attr('height', height + margin.top + margin.bottom);
+
+    var chart = svg.append('g')
+        .attr('class', 'charts')
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+        .call(zoom);
 
     var formatTime = d3.timeFormat('%m/%d %H:%M');
     
@@ -42,13 +49,29 @@ function setupCharts(data) {
     var xAxis = d3.axisBottom().scale(xScale).ticks(10).tickFormat(d3.timeFormat('%H:%M'));
     var yAxis = d3.axisLeft().scale(yScale).ticks(10);
 
-    chart.append('g')
+    var gXAxis = chart.append('g')
         .attr("class", "x axis")
         .attr("transform", "translate(0," + height + ")")
         .style("dominant-baseline", "central")
         .call(xAxis);
     
-    chart.append('g').attr("class", "y axis").call(yAxis);
+    var gYAxis = chart.append('g').attr("class", "y axis").call(yAxis);
+
+    function zoomed() {
+        var nextXScale = d3.event.transform.rescaleX(xScale);
+        var nextYScale = d3.event.transform.rescaleY(yScale);
+
+        d3.selectAll('.line')
+            .style("stroke-width", 2/d3.event.transform.k)
+            .attr("transform", d3.event.transform);
+
+        d3.selectAll('.chartdots')
+            .style("stroke-width", 2/d3.event.transform.k)
+            .attr("transform", d3.event.transform);
+        
+        gXAxis.call(xAxis.scale(nextXScale));
+        gYAxis.call(yAxis.scale(nextYScale));
+    }
 
     // ----------------------------------------
     
@@ -59,16 +82,28 @@ function setupCharts(data) {
         .x(function(d) { return xScale(mapDate(d)); })
         .y(function(d) { return yScale(mapTemp(d)); });
 
-    var dataBindings = chart.selectAll('g.line').data(dataset);
+    var dataBindings = chart.selectAll('g.charts').data(dataset);
 
     // adding the lines itself
     
     dataBindings.enter()
+        .append('g')
         .append('path')
+        .attr('class', 'line')
         .attr("fill", "none")
         .attr("stroke", function(d,i) {return color(i);})
         .attr("stroke-width", 2)
         .attr('d', function(d) { return line(d);});
+
+    // ----------------------------------------
+
+    // append zoom area
+    var view = chart.append("rect")
+        .attr("class", "zoom")
+        .attr("width", width)
+        .attr("height", height)
+        .call(zoom);
+
 
     // ----------------------------------------
 
@@ -110,6 +145,7 @@ function setupCharts(data) {
 	.data(function (d) { return d; })
         .enter()
         .append('circle')
+        .attr('class', 'chartdots')
 	.attr('cx', function (d) { return xScale(mapDate(d)); })
 	.attr('cy', function (d) { return yScale(mapTemp(d)); })
 	.attr('r', 3)
