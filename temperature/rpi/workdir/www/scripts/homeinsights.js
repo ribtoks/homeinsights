@@ -115,7 +115,7 @@ function setupCharts(data) {
 	.attr('r', 3)
         .on("mouseover", function(d) {
             tooltipDiv.transition().duration(200).style('opacity', 0.9);
-            tooltipDiv.html(formatTime(d.time) + '<br/>'  + d.temperature + ' °C')	
+            tooltipDiv.html(formatTime(mapDate(d)) + '<br/>'  + d.temperature + ' °C')	
                 .style('left', (d3.event.pageX) + 'px')		
                 .style('top', (d3.event.pageY - 28) + 'px');	
         })					
@@ -134,6 +134,7 @@ window.onload = function () {
         }
     });
 };
+
 
 
 
