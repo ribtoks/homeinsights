@@ -27,7 +27,7 @@ function setupCharts(data) {
         .domain([d3.min(data, mapTemp), d3.max(data, mapTemp)]);
 
     var chart = d3.select('#linechart').append('svg')
-        .attr('width', width + (2 * margin.left) + margin.right)
+        .attr('width', width + margin.left + margin.right)
         .attr('height', height + margin.top + margin.bottom)
         .append('g').
         attr("transform", "translate(" + margin.left + "," + margin.top + ")");
@@ -122,12 +122,12 @@ function setupCharts(data) {
                 .style('top', (d3.event.pageY - 28) + 'px');	
         })					
         .on("mouseout", function(d) { tooltipDiv.transition().duration(500).style("opacity", 0); });
-};
+}
 
 window.onload = function () {
     var url = document.URL + 'temps';
 
-    $.getJSON(url, function(data) {
+    d3.json(url, function(data) {
         console.log('API response received');
         if (data) {
             setupCharts(data);
