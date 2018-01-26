@@ -1,5 +1,8 @@
 #!/bin/bash
-pushd workdir
+
+WORKDIR="/home/pi/Projects/homeinsights/temperature/rpi/workdir"
+
+pushd ${WORKDIR}
 
 echo "Current PID: $$"
 
