@@ -148,7 +148,7 @@ function setupCharts(data) {
         .attr('class', 'chartdots')
 	.attr('cx', function (d) { return xScale(mapDate(d)); })
 	.attr('cy', function (d) { return yScale(mapTemp(d)); })
-	.attr('r', 3)
+	.attr('r', 2)
         .on("mouseover", function(d) {
             tooltipDiv.transition().duration(200).style('opacity', 0.9);
             tooltipDiv.html(formatTime(mapDate(d)) + '<br/>'  + d.temperature + ' °C')	
@@ -158,19 +158,32 @@ function setupCharts(data) {
         .on("mouseout", function(d) { tooltipDiv.transition().duration(500).style("opacity", 0); });
 }
 
-window.onload = function () {
-    var url = document.URL + 'temps';
+function clearCharts() {
+    d3.selectAll("#linechart > *").remove();
+}
+
+function loadLastN(lastn) {
+    var url = document.URL + 'temps?lastn=' + lastn;
 
     d3.json(url, function(data) {
         console.log('API response received');
         if (data) {
+            clearCharts();
             setupCharts(data);
         } else {
             console.log('Data is null');
         }
     });
+}
+
+window.onload = function () {
+    loadLastN(150);
 };
 
+function loadLastDay() {
+    loadLastN(400);
+}
 
-
-
+function loadLast3Days() {
+    loadLastN(600);
+}

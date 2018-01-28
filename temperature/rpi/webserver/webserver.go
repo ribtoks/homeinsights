@@ -11,6 +11,7 @@ import (
   "log"
   "os"
   "fmt"
+  "strconv"
 )
 
 var (
@@ -37,7 +38,7 @@ func (th *TempHandler) initDatabase() error {
   
   log.Printf("Database %v opened", *dbPathFlag)
   
-  th.selectStmt, err = th.db.Prepare("SELECT * FROM Temps ORDER BY time DESC LIMIT 150")
+  th.selectStmt, err = th.db.Prepare("SELECT * FROM Temps ORDER BY time DESC LIMIT ?")
   if err != nil {
     return err
   }
@@ -57,10 +58,14 @@ func (th *TempHandler) ServeHTTP(rw http.ResponseWriter, request *http.Request) 
   var timestamp int64
   var sensorID int
   var temperature float32
-  
+
+  lastnValue := request.URL.Query().Get("lastn")
+  lastNumber, err := strconv.Atoi(lastnValue)
+  if err != nil { lastNumber = 150 }
+
   log.Printf("Processing request from %v", request.RemoteAddr)
   
-  rows, err := th.selectStmt.Query()
+  rows, err := th.selectStmt.Query(lastNumber)
   if err != nil { return }
 
   var tempsArr []TempData
