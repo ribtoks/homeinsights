@@ -118,8 +118,6 @@ int main(int argc, char *argv[]) {
 
             handleReading(db, insertStatement, (unsigned int)value);
         }
-
-        fflush(stdout);
     }
 
     return 0;
