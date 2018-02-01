@@ -90,7 +90,7 @@ int main(int argc, char *argv[]) {
     tempSwitch.enableReceive(IO_PIN);
     log("Listening on pin %d...", IO_PIN);
 
-    sqlite3 *db;
+    sqlite3 *db = nullptr;
     if (!openDatabase(&db, argv[1])) {
         log("Failed to open database %s", argv[1]);
         return DB_ERROR;
