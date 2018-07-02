@@ -48,6 +48,11 @@ bool tryReadMessage(unsigned int value, TempReading &reading) {
             break;
         }
 
+        if (tempCode == 0) {
+            log("Skipping temperature code 0");
+            break;
+        }
+
         double temperature = TEMP_MIN + TEMP_STEP * (double)tempCode;
         log("Received temperature %.6f from sensor #%u", temperature, id);
 
