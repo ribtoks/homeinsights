@@ -1,5 +1,6 @@
 #include "../../../vendors/rc-switch/RCSwitch.h"
 #include <stdio.h>
+#include <ctime>
 #include "common.h"
 #include "readingsDB.h"
 #include "tempreading.h"
@@ -115,6 +116,8 @@ int main(int argc, char *argv[]) {
         log("Failed to create INSERT statement");
         return DB_ERROR;
     }
+
+    clock_t cbegin = std::clock();
     
     while (1) {
         if (tempSwitch.available()) {
@@ -122,6 +125,12 @@ int main(int argc, char *argv[]) {
             tempSwitch.resetAvailable();
 
             handleReading(db, insertStatement, (unsigned int)value);
+        }
+
+        clock_t cend = clock();
+        int elapsed_secs = cend - cbegin;
+        if (elapsed_secs > 10 * 60 * CLOCKS_PER_SEC) {
+            log("Still listening...");
         }
     }
 
