@@ -8,7 +8,7 @@
 #define TEMP_MIN -40.0
 // #define TEMP_MAX 80
 // (TEMP_MAX - TEMP_MIN + 1)/(2^14)
-#define TEMP_STEP 0.0073852539
+#define TEMP_STEP 0.00738525391
 
 #define DB_ERROR 3
 

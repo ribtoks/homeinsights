@@ -2,12 +2,23 @@
 
 #include <stdarg.h>
 #include <cstdio>
+#include <ctime>
 
 
 int log(const char *fmt, ...) {
     FILE *logFile = nullptr;
 
     logFile = fopen("tempserver.log", "a+");
+
+    time_t rawtime;
+    struct tm * timeinfo;
+    char buffer[80] = {0};
+    
+    time (&rawtime);
+    timeinfo = localtime(&rawtime);
+
+    strftime(buffer, sizeof(buffer), "%d-%m-%Y %I:%M:%S - ", timeinfo);
+    fprintf(logFile, "%s", buffer);
     
     va_list args;
     va_start(args, fmt);
