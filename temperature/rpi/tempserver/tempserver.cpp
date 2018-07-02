@@ -127,10 +127,12 @@ int main(int argc, char *argv[]) {
             handleReading(db, insertStatement, (unsigned int)value);
         }
 
-        clock_t cend = clock();
+        clock_t cend = std::clock();
         int elapsed_secs = cend - cbegin;
         if (elapsed_secs > 10 * 60 * CLOCKS_PER_SEC) {
             log("Still listening...");
+            // to beat int overflow
+            cbegin = std::clock();
         }
     }
 
