@@ -1,5 +1,6 @@
 #include <RCSwitch.h>
 #include <DHT.h>
+#include <LowPower.h>
 
 // -----------------------------------------------------
 // -------- change this section before flushing --------
@@ -86,8 +87,13 @@ void loop() {
 #endif
 
 #ifdef MY_DEBUG
-  delay(5000);
+  unsigned int sleepCount = 1; 
 #else
-  delay(10*60000);
+  // 1 hour == 60*60 == 3600 s
+  // 3600s / 8s == 450
+  unsigned int sleepCount = 450;
 #endif
+  for (; sleepCount > 0; sleepCount--) {
+    LowPower.powerDown(SLEEP_8S, ADC_OFF, BOD_OFF);
+  }
 }
