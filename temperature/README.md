@@ -7,7 +7,7 @@ Manual currently for Arduino Uno + Raspberry Pi
 ## Programming
 
 * install Arduino IDE
-* install libraries `DHT` v1.2.3, `rc-switch` latest
+* install libraries `DHT` v1.2.3, `rc-switch` latest, `Low-Power` 1.6
 * flush sketch in `arduino/` dir onto board
 
 ## Wiring
