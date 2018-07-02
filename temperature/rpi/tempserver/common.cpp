@@ -17,7 +17,7 @@ int log(const char *fmt, ...) {
     time (&rawtime);
     timeinfo = localtime(&rawtime);
 
-    strftime(buffer, sizeof(buffer), "%d-%m-%Y %I:%M:%S - ", timeinfo);
+    strftime(buffer, sizeof(buffer), "%d-%m-%Y %H:%M:%S - ", timeinfo);
     fprintf(logFile, "%s", buffer);
     
     va_list args;
