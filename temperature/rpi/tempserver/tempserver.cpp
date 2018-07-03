@@ -1,5 +1,6 @@
 #include "../../../vendors/rc-switch/RCSwitch.h"
 #include <stdio.h>
+#include <ctime>
 #include "common.h"
 #include "readingsDB.h"
 #include "tempreading.h"
@@ -124,6 +125,14 @@ int main(int argc, char *argv[]) {
             tempSwitch.resetAvailable();
 
             handleReading(db, insertStatement, (unsigned int)value);
+        }
+
+        clock_t cend = std::clock();
+        int elapsed_secs = cend - cbegin;
+        if (elapsed_secs > 10 * 60 * CLOCKS_PER_SEC) {
+            log("Still listening...");
+            // to beat int overflow
+            cbegin = std::clock();
         }
     }
 
