@@ -116,8 +116,6 @@ int main(int argc, char *argv[]) {
         return DB_ERROR;
     }
 
-    clock_t cbegin = std::clock();
-    
     while (1) {
         if (tempSwitch.available()) {
             int value = tempSwitch.getReceivedValue();
