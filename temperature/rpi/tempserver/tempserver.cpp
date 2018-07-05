@@ -125,6 +125,7 @@ int main(int argc, char *argv[]) {
             tempSwitch.resetAvailable();
 
             handleReading(db, insertStatement, (unsigned int)value);
+            cbegin = std::clock();
         }
 
         clock_t cend = std::clock();
