@@ -167,7 +167,7 @@ function clearCharts() {
 }
 
 function updateTime() {
-    var updateMark = document.getElementById('#lastUpdated');
+    var updateMark = document.getElementById('lastUpdated');
     var d = new Date();
     updateMark.innerHTML = d.toLocaleTimeString();
 }
