@@ -80,6 +80,8 @@ func (th *TempHandler) queryMetrics(daysNumber int) []TempData {
   var sensorID int
   var temperature float32
 
+  log.Printf("%v last days to query", daysNumber)
+
   rows, err := th.selectStmt.Query((daysNumber + 1) * 24 * probesPerHour)
   if err != nil { return []TempData{} }
 
@@ -95,6 +97,7 @@ func (th *TempHandler) queryMetrics(daysNumber int) []TempData {
   
   rows.Close()
 
+  log.Printf("Last date found is %v", time.Unix(maxTimestamp, 0))
   firstTime := time.Unix(maxTimestamp, 0).Add(-time.Hour*24*time.Duration(daysNumber)).Unix()
 
   j := 0
@@ -103,9 +106,8 @@ func (th *TempHandler) queryMetrics(daysNumber int) []TempData {
     if td.Time < firstTime { break }
   }
 
-  log.Printf("%v objects to return out of %v", j+1, len(tempsArr))
-    
-  return tempsArr[:(j+1)]
+  log.Printf("%v objects to return out of %v", j, len(tempsArr))    
+  return tempsArr[:j]
 }
 
 func main() {
