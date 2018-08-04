@@ -12,10 +12,15 @@ import (
   "os"
   "fmt"
   "strconv"
+  "time"
 )
 
 var (
   dbPathFlag = flag.String("db-path", "./temp.db", "Path to the database with temperature notes")
+)
+
+const (
+  probesPerHour = 4
 )
 
 type TempData struct {
@@ -55,18 +60,28 @@ func (th *TempHandler) finalizeDatabase() error {
 }
 
 func (th *TempHandler) ServeHTTP(rw http.ResponseWriter, request *http.Request) {
-  var timestamp int64
+  log.Printf("Processing request from %v", request.RemoteAddr)
+  
+  daysParam := request.URL.Query().Get("days")
+  daysNumber, err := strconv.Atoi(daysParam)
+  if err != nil { daysNumber = 1 }
+
+  tempsArr := th.queryMetrics(daysNumber)
+  temps, _ := json.Marshal(tempsArr)
+  byteArray := bytes.NewBuffer(temps).Bytes()
+
+  log.Printf("%v bytes to send", len(byteArray))
+
+  rw.Write(byteArray)
+}
+
+func (th *TempHandler) queryMetrics(daysNumber int) []TempData {
+  var timestamp, maxTimestamp int64
   var sensorID int
   var temperature float32
 
-  lastnValue := request.URL.Query().Get("lastn")
-  lastNumber, err := strconv.Atoi(lastnValue)
-  if err != nil { lastNumber = 150 }
-
-  log.Printf("Processing request from %v", request.RemoteAddr)
-  
-  rows, err := th.selectStmt.Query(lastNumber)
-  if err != nil { return }
+  rows, err := th.selectStmt.Query((daysNumber + 1) * 24 * probesPerHour)
+  if err != nil { return []TempData{} }
 
   var tempsArr []TempData
   
@@ -75,18 +90,22 @@ func (th *TempHandler) ServeHTTP(rw http.ResponseWriter, request *http.Request) 
     if err != nil { continue }
   
     tempsArr = append(tempsArr, TempData{timestamp, sensorID, temperature})
+    if (timestamp > maxTimestamp) { maxTimestamp = timestamp }
   }
-
-  log.Printf("%v objects to return", len(tempsArr))
-
-  temps, _ := json.Marshal(tempsArr)
-  byteArray := bytes.NewBuffer(temps).Bytes()
-
-  log.Printf("%v bytes to send", len(byteArray))
-
-  rw.Write(byteArray)
   
   rows.Close()
+
+  firstTime := time.Unix(maxTimestamp, 0).Add(-time.Hour*24*time.Duration(daysNumber)).Unix()
+
+  j := 0
+  for i, td := range tempsArr {
+    j = i
+    if td.Time < firstTime { break }
+  }
+
+  log.Printf("%v objects to return out of %v", j+1, len(tempsArr))
+    
+  return tempsArr[:(j+1)]
 }
 
 func main() {

@@ -162,8 +162,8 @@ function clearCharts() {
     d3.selectAll("#linechart > *").remove();
 }
 
-function loadLastN(lastn) {
-    var url = document.URL + 'temps?lastn=' + lastn;
+function loadLastDays(days) {
+    var url = document.URL + 'temps?days=' + days;
 
     d3.json(url, function(data) {
         console.log('API response received');
@@ -177,13 +177,13 @@ function loadLastN(lastn) {
 }
 
 window.onload = function () {
-    loadLastN(150);
+    loadLastDay();
 };
 
 function loadLastDay() {
-    loadLastN(400);
+    loadLastDays(1);
 }
 
 function loadLast3Days() {
-    loadLastN(600);
+    loadLastDays(3);
 }
