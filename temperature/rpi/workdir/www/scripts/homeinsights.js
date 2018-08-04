@@ -181,7 +181,7 @@ function loadLastDays(days) {
         if (data) {
             clearCharts();
             setupCharts(data);
-            udpateTime();
+            updateTime();
         } else {
             console.log('Data is null');
         }
