@@ -190,9 +190,7 @@ function loadLastDays(days) {
 }
 
 function autoUpdate() {
-    if (pageOptions.autoUpdate) {
-        loadLastDays(pageOptions.lastN);
-    }
+    loadLastDays(pageOptions.lastN);
 }
 
 window.onload = function () {
@@ -207,8 +205,7 @@ function loadLast3Days() {
     loadLastDays(3);
 }
 
-function autoUpdateClick() {
-    var checkBox = document.getElementById("autoUpdateCheckbox");
+function autoUpdateClick(checkBox) {
     if (checkBox.checked) {
         pageOptions.updater = setInterval(autoUpdate, 60*1000);
     } else {

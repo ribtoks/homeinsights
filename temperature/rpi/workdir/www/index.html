@@ -26,6 +26,10 @@
          border-radius: 8px;			
          pointer-events: none;			
      }
+
+     div.autoupdate {
+         margin-top: 10px;
+     }
     </style>
     
     <head>
@@ -36,11 +40,11 @@
     </head>
     <body>
         <h1>Home Insights</h1>
-        <div>
+        <div class="timelinks">
             <a href="#" onclick="loadLastDay(); return false;">Last day</a>&nbsp;&nbsp;&nbsp;<a href="#" onclick="loadLast3Days(); return false;">Last 3 days</a>
         </div>
-        <div>
-            <input type="checkbox" id="autoUpdateCheckbox" onclick="autoUpdateClick()">&nbsp;autoupdate&nbsp;&nbsp;&nbsp;(updated on <span id="lastUpdated"></span>)
+        <div class="autoupdate">
+            <input type="checkbox" onclick="autoUpdateClick(this)">&nbsp;autoupdate&nbsp;&nbsp;&nbsp;(updated on <span id="lastUpdated"></span>)
         </div>
         <!--<ul id="insights"></ul>-->
         <div id="linechart"></div>
