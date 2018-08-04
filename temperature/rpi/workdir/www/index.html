@@ -36,9 +36,12 @@
     </head>
     <body>
         <h1>Home Insights</h1>
-        <p>
-            <a href="#" onclick="loadLastDay(); return false;">Last day</a>&nbsp;&nbsp;&nbsp;<a href="#" onclick="loadLast3Days(); return false;">Last 3 days</a>&nbsp;&nbsp;&nbsp;(updated <span id="lastUpdated"></span>)            
-        </p>
+        <div>
+            <a href="#" onclick="loadLastDay(); return false;">Last day</a>&nbsp;&nbsp;&nbsp;<a href="#" onclick="loadLast3Days(); return false;">Last 3 days</a>
+        </div>
+        <div>
+            <input type="checkbox" id="autoUpdateCheckbox" onclick="autoUpdateClick()">&nbsp;autoupdate&nbsp;&nbsp;&nbsp;(updated on <span id="lastUpdated"></span>)
+        </div>
         <!--<ul id="insights"></ul>-->
         <div id="linechart"></div>
     </body>

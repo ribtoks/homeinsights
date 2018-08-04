@@ -11,7 +11,8 @@ Array.prototype.groupBy = function(prop) {
 };
 
 var pageOptions = {
-    lastN: 1
+    lastN: 1,
+    autoUpdate: false
 };
 
 function setupCharts(data) {
@@ -189,13 +190,13 @@ function loadLastDays(days) {
 }
 
 function autoUpdate() {
-    console.log('Updating...');
-    loadLastDays(pageOptions.lastN);
+    if (pageOptions.autoUpdate) {
+        loadLastDays(pageOptions.lastN);
+    }
 }
 
 window.onload = function () {
     loadLastDay();
-    setInterval(autoUpdate, 60*1000);
 };
 
 function loadLastDay() {
@@ -204,4 +205,13 @@ function loadLastDay() {
 
 function loadLast3Days() {
     loadLastDays(3);
+}
+
+function autoUpdateClick() {
+    var checkBox = document.getElementById("autoUpdateCheckbox");
+    if (checkBox.checked) {
+        pageOptions.updater = setInterval(autoUpdate, 60*1000);
+    } else {
+        clearInterval(pageOptions.updater);
+    }
 }
