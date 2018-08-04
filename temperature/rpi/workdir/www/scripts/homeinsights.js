@@ -10,6 +10,10 @@ Array.prototype.groupBy = function(prop) {
     }, {});
 };
 
+var pageOptions = {
+    lastN: 1
+};
+
 function setupCharts(data) {
     var margin = {top: 20, right: 60, bottom: 30, left: 50};
 
@@ -162,7 +166,14 @@ function clearCharts() {
     d3.selectAll("#linechart > *").remove();
 }
 
+function updateTime() {
+    var updateMark = document.getElementById('#lastUpdated');
+    var d = new Date();
+    updateMark.innerHTML = d.toLocaleTimeString();
+}
+
 function loadLastDays(days) {
+    pageOptions.lastN = days;
     var url = document.URL + 'temps?days=' + days;
 
     d3.json(url, function(data) {
@@ -170,14 +181,21 @@ function loadLastDays(days) {
         if (data) {
             clearCharts();
             setupCharts(data);
+            udpateTime();
         } else {
             console.log('Data is null');
         }
     });
 }
 
+function autoUpdate() {
+    console.log('Updating...');
+    loadLastDays(pageOptions.lastN);
+}
+
 window.onload = function () {
     loadLastDay();
+    setInterval(autoUpdate, 60*1000);
 };
 
 function loadLastDay() {
