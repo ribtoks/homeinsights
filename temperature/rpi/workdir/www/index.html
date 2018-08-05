@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
     <style>
+     body div {
+         margin-left: 30px;
+     }
+     
      .zoom {
          cursor: move;
          fill: none;
@@ -39,7 +43,9 @@
         <script src="scripts/homeinsights.js"></script>        
     </head>
     <body>
-        <h1>Home Insights</h1>
+        <div>
+            <h1>Home Insights</h1>
+        </div>
         <div class="timelinks">
             <a href="#" onclick="loadLastDay(); return false;">Today</a>&nbsp;&nbsp;&nbsp;<a href="#" onclick="loadLast3Days(); return false;">Last 3 days</a>&nbsp;&nbsp;&nbsp;<a href="#" onclick="loadLastWeek(); return false;">Last week</a>
         </div>
