@@ -205,6 +205,10 @@ function loadLast3Days() {
     loadLastDays(3);
 }
 
+function loadLastWeek() {
+    loadLastDays(7);
+}
+
 function autoUpdateClick(checkBox) {
     if (checkBox.checked) {
         pageOptions.updater = setInterval(autoUpdate, 60*1000);
