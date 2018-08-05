@@ -13,6 +13,7 @@ import (
   "fmt"
   "strconv"
   "time"
+  "github.com/wcharczuk/go-chart"
 )
 
 var (
@@ -59,7 +60,7 @@ func (th *TempHandler) finalizeDatabase() error {
   return nil
 }
 
-func (th *TempHandler) ServeHTTP(rw http.ResponseWriter, request *http.Request) {
+func (th *TempHandler) ServeJSON(rw http.ResponseWriter, request *http.Request) {
   log.Printf("Processing request from %v", request.RemoteAddr)
   
   daysParam := request.URL.Query().Get("days")
@@ -74,6 +75,35 @@ func (th *TempHandler) ServeHTTP(rw http.ResponseWriter, request *http.Request) 
 
   rw.Write(byteArray)
 }
+
+func (th *TempHandler) ServePNG(rw http.ResponseWriter, request *http.Request) {
+  log.Printf("Processing request from %v", request.RemoteAddr)
+  
+  daysParam := request.URL.Query().Get("days")
+  daysNumber, err := strconv.Atoi(daysParam)
+  if err != nil { daysNumber = 1 }
+
+  tempsArr := th.queryMetrics(daysNumber)
+
+  var x, y []float64
+
+  for _, t := range tempsArr {
+    x = append(x, t.Time)
+    y = append(y, t.Temperature)
+  }
+
+  graph := chart.Chart{
+    Series: []chart.Series{
+        chart.ContinuousSeries{
+            XValues: x,
+            YValues: y,
+        },
+    },
+  }
+
+  rw.Header().Set("Content-Type", "image/png")
+  graph.Render(chart.PNG, rw)
+} 
 
 func (th *TempHandler) queryMetrics(daysNumber int) []TempData {
   var timestamp, maxTimestamp int64
@@ -125,7 +155,9 @@ func main() {
   }
 
   http.Handle("/", http.FileServer(http.Dir("./www")))
-  http.Handle("/temps", handler)
+  http.HandleFunc("/temps", func(w http.ResponseWriter, r *http.Request) {
+    th.ServeJSON(w, r)
+  })
 
   err = http.ListenAndServe(":8080", nil)
 
